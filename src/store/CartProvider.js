@@ -8,12 +8,31 @@ const defaultCartState = {
 };
 const cartReducer = (state, action) => {
 	if (action.type === 'ADD_ITEM') {
-        const updatedItems = state.items.concat(action.item) // better than push b/c brings back new array
-        const updatedTotalAmount = state.totalAmount + action.item.price * action.item.amount
-        return {
-            items: updatedItems,
-            totalAmount: updatedTotalAmount
-        }
+		const updatedTotalAmount =
+			state.totalAmount + action.item.price * action.item.amount;
+
+		const existingcartItemIndex = state.item.findIndex(
+			(item) => item.id === action.item.id
+		);
+
+		const existingCartItem = state.items[existingcartItemIndex];
+		let updatedItems;
+
+		if (existingCartItem) {
+			const updatedItem = {
+				...existingCartItem,
+				amount: existingCartItem.amount + action.item.amount,
+			};
+			updatedItems = [...state.items];
+			updatedItems[existingcartItemIndex] = updatedItem;
+		} else {
+			updatedItems = state.items.concat(action.item)
+			// better than push b/c brings back new array
+		}
+		return {
+			items: updatedItems,
+			totalAmount: updatedTotalAmount,
+		};
 	}
 	return defaultCartState;
 };
